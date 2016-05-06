@@ -1,0 +1,173 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>&lt;kwc-i18next&gt;</title>
+
+  <script src="../../webcomponentsjs/webcomponents-lite.min.js"></script>
+
+  <link rel="import" href="../../kwc-i18next/kwc-i18next.html">
+</head>
+<body>
+<div class="example">
+  <h3>Base</h3>
+  <p>
+    <kwc-i18next key="test:title" show></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="test:body" show></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="test:footer" show></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="key" show></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="undefined" show></kwc-i18next>
+  </p>
+</div>
+
+<div class="example">
+  <h3>Interpolation</h3>
+  <p>
+    <kwc-i18next key="interpolation:base" show p-text="1" id="i18n-p-text"></kwc-i18next>
+    <button id="change-p-text">Change</button>
+  </p>
+  <p>
+    <kwc-i18next key="interpolation:html" show p-code="<u>underline</u>" id="i18n-p-code"></kwc-i18next>
+    <button class="change-p-code"><b>bold</b></button>
+    <button class="change-p-code"><i>italic</i></button>
+    <button class="change-p-code"><u>underline</u></button>
+  </p>
+  <p>
+    <kwc-i18next key="interpolation:dangerous" show p-code="<span style='color:red'>BOOM!<span>" not-escape></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="interpolation:dangerous" show p-code="<span style='color:red'>BOOM!<span>"></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="interpolation:deep" show p-var='{"deep":{"deep":"Some var"}}'></kwc-i18next>
+  </p>
+</div>
+
+<div class="example">
+  <h3>Nesting</h3>
+  <p>
+    <kwc-i18next key="nesting:nesting1" show p-count="2" p-girls="3"></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="nesting:girlsAndBoys" show p-count="2" p-girls="3"></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="nesting:key2" show p-val="$t(nesting:key1)"></kwc-i18next>
+  </p>
+</div>
+
+<div class="example">
+  <h3>Plural</h3>
+  <p>
+    <kwc-i18next key="plural:key" show p-count="0"></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="plural:key" show p-count="1"></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="plural:key" show p-count="5"></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="plural:key" show p-count="100"></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="plural:keyWithCount" show p-count="0"></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="plural:keyWithCount" show p-count="1"></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="plural:keyWithCount" show p-count="5"></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="plural:keyWithCount" show p-count="100"></kwc-i18next>
+  </p>
+</div>
+
+<div class="example">
+  <h3>Context</h3>
+  <p>
+    <kwc-i18next key="context:friend" show></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="context:friend" show p-context="male"></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="context:friend" show p-context="female"></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="context:friend" show p-context="male" p-count="1"></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="context:friend" show p-context="male" p-count="100"></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="context:friend" show p-context="female" p-count="1"></kwc-i18next>
+  </p>
+  <p>
+    <kwc-i18next key="context:friend" show p-context="female" p-count="100"></kwc-i18next>
+  </p>
+</div>
+
+<div>
+  <button class="lang">fr</button>
+  <button class="lang">en</button>
+  <button class="lang">en-US</button>
+</div>
+
+<script src="../../i18next-xhr-backend/i18nextXHRBackend.min.js"></script>
+<script src="../../i18next/i18next.min.js"></script>
+<script>
+  (function () {
+    i18next
+        .use(window.i18nextXHRBackend)
+        .init({
+          debug: true,
+          lng: "en",
+          fallbackLng: "en",
+          backend: {
+            loadPath: "locales/{{lng}}/{{ns}}.json"
+          },
+          ns: [
+            "test",
+            "interpolation",
+            "nesting",
+            "plural",
+            "context",
+            "default",
+            "global"
+          ],
+          defaultNS: "default",
+          fallbackNS: "global"
+        });
+
+    Array.from(document.querySelectorAll(".lang")).forEach(function (elt) {
+      elt.addEventListener("click", function (e) {
+        e.preventDefault();
+        i18next.changeLanguage(e.target.textContent);
+      })
+    });
+
+    document.querySelector("#change-p-text").addEventListener("click", function (e) {
+      e.preventDefault();
+      document.querySelector("#i18n-p-text").setAttribute("p-text", Math.random().toString());
+    });
+
+    Array.from(document.querySelectorAll(".change-p-code")).forEach(function (elt) {
+      elt.addEventListener("click", function (e) {
+        e.preventDefault();
+        document.querySelector("#i18n-p-code").setAttribute("p-code", elt.innerHTML);
+      });
+    });
+  })()
+</script>
+</body>
+</html>

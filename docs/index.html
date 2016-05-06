@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>&lt;kwc-i18next&gt;</title>
+</head>
+<body>
+
+<h1><code>&lt;kwc-i18next&gt;</code></h1>
+
+<div id="kwc-content">
+  <!--[get-started]-->
+
+  <h3>Description</h3>
+
+  <p>
+    This component is based on <a href="http://i18next.com">i18next</a>.
+    This component is just an interface to use this library as a component system.
+    Please go to its own documentation to understand how it works.
+  </p>
+
+  <h3>Properties</h3>
+
+  <table>
+    <thead>
+    <tr>
+      <th>Attribute</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Properties</th>
+      <th>Required</th>
+      <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+      <td><code>key</code></td>
+      <td><code>String</code></td>
+      <td><code>null</code></td>
+      <td>-</td>
+      <td>&check;</td>
+      <td>The key of the translation</td>
+    </tr>
+    <tr>
+      <td><code>show</code></td>
+      <td><code>Boolean</code></td>
+      <td><code>false</code></td>
+      <td>-</td>
+      <td>&times;</td>
+      <td>If <code>true</code>, shows the translation. If <code>false</code>, you should get the result from
+        <code>var</code> attribute
+      </td>
+    </tr>
+    <tr>
+      <td><code>var</code></td>
+      <td><code>String</code></td>
+      <td><code>false</code></td>
+      <td><code>readOnly</code> + <code>reflectToAttribute</code> + <code>notify</code></td>
+      <td>&times;</td>
+      <td>If defined, the resulting translation will be set into this var.</td>
+    </tr>
+    <tr>
+      <td><code>not-escape</code></td>
+      <td><code>Boolean</code></td>
+      <td><code>false</code></td>
+      <td>-</td>
+      <td>&times;</td>
+      <td>If <code>true</code>, parameters will not be escaped. See i18next for more information</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <h3>Children selectors</h3>
+
+  <p>This component does not use children.</p>
+
+  <h3>Methods</h3>
+
+  <p>This component has no particular method.</p>
+
+  <h3>Events</h3>
+
+  <p>This component has no particular event (except notified attributes).</p>
+
+  <h3>Custom styles</h3>
+
+  <p>This component has particular style.</p>
+
+  <h3>Examples</h3>
+
+  <p>See <a href="../demo/base/base.html">demo</a> for examples of uses.</p>
+</div>
+</body>
+</html>

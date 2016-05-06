@@ -1,0 +1,5 @@
+{
+  "first": "Une valeur aléatoire: {{text}}",
+  "second": "Une valeur en HTML: {{-code}}",
+  "dangerous": "Peut-être que ce code est dangereux: {{code}}"
+}

@@ -1,0 +1,6 @@
+{
+  "base": "A random value: {{text}}",
+  "html": "A value in HTML: {{-code}}",
+  "dangerous": "Maybe this code is dangerous: {{code}}",
+  "deep": "A complex variable: {{var.deep.deep}}"
+}

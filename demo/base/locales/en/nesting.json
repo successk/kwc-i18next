@@ -1,0 +1,11 @@
+{
+  "nesting1": "en $t(nesting2)",
+  "nesting2": "2 $t(nesting3)",
+  "nesting3": "3",
+  "girlsAndBoys": "$t(nesting:girls, {\"count\": {{girls}} }) and {{count}} boy",
+  "girlsAndBoys_plural": "$t(nesting:girls, {\"count\": {{girls}} }) and {{count}} boys",
+  "girls": "{{count}} girl",
+  "girls_plural": "{{count}} girls",
+  "key1": "hello world",
+  "key2": "say: {{val}}"
+}
