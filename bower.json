@@ -18,7 +18,8 @@
     "tests"
   ],
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.0.0"
+    "polymer": "Polymer/polymer#^1.0.0",
+    "i18next": "^2.5.1"
   },
   "homepage": "https://github.com/successk/kwc-i18next",
   "authors": [
