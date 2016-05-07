@@ -32,6 +32,7 @@ const tasks = Object.freeze({
   verifyDependencies: "verifyDependencies",
   verifyDemoHTML: "verifyDemoHTML",
   verifyDemoJS: "verifyDemoJS",
+  verifyDemoJSON: "verifyDemoJSON",
   verify: "verify"
 });
 
@@ -146,13 +147,15 @@ gulp.task(tasks.verifyBuild, [tasks.build], () =>
     .pipe(gulp.dest("bower_components/" + bowerConfig.name))
 );
 
-gulp.task(tasks.verifyDependencies, () => dependencies(paths.verify));
+gulp.task(tasks.verifyDependencies, [tasks.verifyBuild], () => dependencies(paths.verify));
 
 gulp.task(tasks.verifyDemoJS, () => compileJS(paths.demoJS, paths.verifyDemo));
 
+gulp.task(tasks.verifyDemoJSON, () => gulp.src(paths.demoJSON).pipe(gulp.dest(paths.verifyDemo)));
+
 gulp.task(tasks.verifyDemoHTML, () => compileHTML(paths.demoHTML, paths.verifyDemo));
 
-gulp.task(tasks.verify, [tasks.verifyBuild, tasks.verifyDependencies, tasks.verifyDemoJS, tasks.verifyDemoHTML], () =>
+gulp.task(tasks.verify, [tasks.verifyDependencies, tasks.verifyDemoJS, tasks.verifyDemoJSON, tasks.verifyDemoHTML], () =>
   gulp.src(paths.verify)
     .pipe(webserver({
       host: "localhost",

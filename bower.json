@@ -1,6 +1,6 @@
 {
   "name": "kwc-i18next",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A web component used to manage internationalization – replaces kwc-i18n",
   "license": "MIT",
   "main": "kwc-i18next.html",

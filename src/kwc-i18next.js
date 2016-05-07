@@ -51,7 +51,6 @@
     _update() {
       if (this._isAttached) {
         const options = this._getOptions();
-        console.log(`i18next.t(${this.key}, ${JSON.stringify(options)})`);
         this._setVar(window.i18next.t(this.key, options));
       }
     }
