@@ -1,0 +1,9 @@
+{
+  "verbose": false,
+  "suites": ["test/auto"],
+  "plugins": {
+    "local": {
+      "browsers": ["firefox", "chrome"]
+    }
+  }
+}

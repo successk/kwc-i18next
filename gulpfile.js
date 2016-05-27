@@ -5,53 +5,59 @@ const gutil = require("gulp-util");
 const watch = require("gulp-watch");
 const babel = require("gulp-babel");
 const webserver = require("gulp-webserver");
-var uglify = require("gulp-uglify");
-var minifyInline = require("gulp-minify-inline");
-var htmlmin = require("gulp-htmlmin");
-var inlinesource = require("gulp-inline-source");
+const uglify = require("gulp-uglify");
+const minifyInline = require("gulp-minify-inline");
+const htmlmin = require("gulp-htmlmin");
+const inlinesource = require("gulp-inline-source");
+const wct = require("web-component-tester");
 
 /// Constants
 const tasks = Object.freeze({
-  devHTML: "compileHTML",
-  devSrcHTML: "devSrcHTML",
-  devDemoHTML: "devDemoHTML",
-  devJS: "compileJS",
-  devSrcJS: "devSrcJS",
-  devDemoJS: "devDemoJS",
-  devDemoJSON: "devDemoJSON",
-  devDependencies: "devDependencies",
-  dev: "dev",
-
-  buildHTML: "buildHTML",
-  buildJS: "buildJS",
+  // Build
+  compileHtml: "compileHtml",
+  compileJs: "compileJs",
   inline: "inline",
+
+  // Minify
+  minify: "minify",
+  minifyInline: "minifyInline",
   build: "build",
 
-  // used to check validity of built version
-  verifyBuild: "verifyBuild",
-  verifyDependencies: "verifyDependencies",
-  verifyDemoHTML: "verifyDemoHTML",
-  verifyDemoJS: "verifyDemoJS",
-  verifyDemoJSON: "verifyDemoJSON",
-  verify: "verify"
+  // Manual test
+  copyTestToTest: "copyTestToTest",
+  copyDependenciesToTest: "copyDependenciesToTest",
+  copyToTest: "copyToTest",
+
+  // Demo
+  copyToDemo: "copyToDemo",
+  copyDependenciesToDemo: "copyDependenciesToDemo",
+  copyDemoToDemo: "copyDemoToDemo",
+  demo: "demo",
+
+  // Tests
+  manualTest: "manualTest"
 });
 
 const paths = Object.freeze({
+  src: "src/**",
   srcHTML: "src/*.html",
   srcJS: "src/*.js",
-  demoHTML: "demo/**/*.html",
-  demoJS: "demo/**/*.js",
-  demoJSON: "demo/**/*.json",
-
-  dev: "build/dev",
-  devComponent: "build/dev/" + bowerConfig.name,
-  devDemo: "build/dev/demo",
 
   build: "build/compile",
-  builtHTML: "build/compile/*.html",
+  buildHTML: "build/compile/*.html",
+  buildFiles: "build/compile/**",
 
-  verifyDemo: "build/verify/demo",
-  verify: "build/verify"
+  // Manual test files
+  testSrc: "test/**",
+  test: "build/test",
+  testComponent: "build/test/" + bowerConfig.name,
+  testTest: "build/test/test",
+
+  // Demo files
+  demoSrc: "demo/**",
+  demo: "build/demo",
+  demoComponent: "build/demo/" + bowerConfig.name,
+  demoDemo: "build/demo/demo"
 });
 
 /// Helpers
@@ -60,51 +66,124 @@ function handleError(e) {
   this.emit("end");
 }
 
-function compileJS(source, dest) {
-  "use strict";
-  return gulp.src(source)
+/// Demo tasks
+gulp.task(tasks.compileJs, () =>
+  gulp.src(paths.srcJS)
     .pipe(babel({
       presets: ["es2015"]
     }))
     .on("error", handleError)
-    .pipe(gulp.dest(dest));
-}
+    .pipe(gulp.dest(paths.build))
+);
 
-function compileHTML(source, dest) {
-  "use strict";
-  return gulp.src(source)
+gulp.task(tasks.compileHtml, () =>
+  gulp.src(paths.srcHTML)
     .on("error", handleError)
-    .pipe(gulp.dest(dest));
-}
+    .pipe(gulp.dest(paths.build))
+);
 
-function dependencies(dest) {
-  "use strict";
-  return gulp.src("bower_components/**/*")
+gulp.task(tasks.inline, [tasks.compileHtml, tasks.compileJs], () =>
+  gulp.src(paths.buildHTML)
+    .pipe(inlinesource())
+    .pipe(gulp.dest(paths.build))
+);
+
+gulp.task(tasks.minifyInline, [tasks.inline], () =>
+  gulp.src(paths.buildHTML)
+    .pipe(minifyInline())
+    .pipe(gulp.dest(paths.build))
+);
+
+gulp.task(tasks.minify, [tasks.minifyInline], () =>
+  gulp.src(paths.buildHTML)
+    .pipe(htmlmin({collapseWhitespace: true}))
+    .pipe(gulp.dest(paths.build))
+);
+
+gulp.task(tasks.build, [tasks.minify], () =>
+  gulp.src(paths.buildHTML)
+    .pipe(gulp.dest("."))
+);
+
+// Automatic tests
+wct.gulp.init(gulp, [tasks.build]);
+
+// Manual tests
+gulp.task(tasks.manualTest, [tasks.build], () => {
+  gulp.watch(paths.demoJS, [tasks.build]);
+  gulp.watch(paths.srcJS, [tasks.build]);
+  gulp.watch(paths.demoHTML, [tasks.build]);
+  gulp.watch(paths.srcHTML, [tasks.build]);
+
+  gulp.src(".")
+    .pipe(webserver({
+      host: "localhost",
+      port: 8000,
+      livereload: true,
+      directoryListing: true,
+      open: "http://localhost:8000/test/manual"
+    }));
+});
+
+// Manual tests
+gulp.task(tasks.copyTestToTest, () => {
+  return gulp.src(paths.testSrc)
     .on("error", handleError)
-    .pipe(gulp.dest(dest));
-}
+    .pipe(gulp.dest(paths.testTest));
+});
 
-/// Dev tasks
-gulp.task(tasks.devSrcJS, () => compileJS(paths.srcJS, paths.devComponent));
+gulp.task(tasks.copyDependenciesToTest, () =>
+  gulp.src("bower_components/**/*")
+    .on("error", handleError)
+    .pipe(gulp.dest(paths.test))
+);
 
-gulp.task(tasks.devDemoJS, () => compileJS(paths.demoJS, paths.devDemo));
+gulp.task(tasks.copyToTest, [tasks.compileHtml, tasks.compileJs], () =>
+  gulp.src(paths.buildFiles)
+    .on("error", handleError)
+    .pipe(gulp.dest(paths.testComponent))
+);
 
-gulp.task(tasks.devDemoJSON, () => gulp.src(paths.demoJSON).pipe(gulp.dest(paths.devDemo)));
+gulp.task(tasks.manualTest, [tasks.copyToTest, tasks.copyTestToTest, tasks.copyDependenciesToTest], () => {
+  const dep = [tasks.copyToTest, tasks.copyTestToTest, tasks.copyDependenciesToTest];
+  gulp.watch(paths.src, dep);
+  gulp.watch(paths.testSrc, dep);
 
-gulp.task(tasks.devSrcHTML, () => compileHTML(paths.srcHTML, paths.devComponent));
+  gulp.src(paths.test)
+    .pipe(webserver({
+      host: "localhost",
+      port: 8000,
+      livereload: true,
+      directoryListing: true,
+      open: "http://localhost:8000/test/manual"
+    }));
+});
 
-gulp.task(tasks.devDemoHTML, () => compileHTML(paths.demoHTML, paths.devDemo));
+// Demo
+gulp.task(tasks.copyDemoToDemo, () => {
+  return gulp.src(paths.demoSrc)
+    .on("error", handleError)
+    .pipe(gulp.dest(paths.demoDemo));
+});
 
-gulp.task(tasks.devDependencies, () => dependencies(paths.dev));
+gulp.task(tasks.copyDependenciesToDemo, () =>
+  gulp.src("bower_components/**/*")
+    .on("error", handleError)
+    .pipe(gulp.dest(paths.demo))
+);
 
-gulp.task(tasks.dev, [tasks.devSrcJS, tasks.devDemoJS, tasks.devDemoJSON, tasks.devSrcHTML, tasks.devDemoHTML, tasks.devDependencies], function () {
-  gulp.watch(paths.demoJS, [tasks.devDemoJS]);
-  gulp.watch(paths.demoJSON, [tasks.devDemoJSON]);
-  gulp.watch(paths.srcJS, [tasks.devSrcJS]);
-  gulp.watch(paths.demoHTML, [tasks.devDemoHTML]);
-  gulp.watch(paths.srcHTML, [tasks.devSrcHTML]);
+gulp.task(tasks.copyToDemo, [tasks.build], () =>
+  gulp.src(paths.buildHTML)
+    .on("error", handleError)
+    .pipe(gulp.dest(paths.demoComponent))
+);
 
-  gulp.src(paths.dev)
+gulp.task(tasks.demo, [tasks.copyToDemo, tasks.copyDemoToDemo, tasks.copyDependenciesToDemo], () => {
+  const dep = [tasks.copyToDemo, tasks.copyDemoToDemo, tasks.copyDependenciesToDemo]
+  gulp.watch(paths.src, dep);
+  gulp.watch(paths.demoSrc, dep);
+
+  gulp.src(paths.demo)
     .pipe(webserver({
       host: "localhost",
       port: 8000,
@@ -113,55 +192,3 @@ gulp.task(tasks.dev, [tasks.devSrcJS, tasks.devDemoJS, tasks.devDemoJSON, tasks.
       open: "http://localhost:8000/demo"
     }));
 });
-
-/// Build tasks
-gulp.task(tasks.buildHTML, () =>
-  gulp.src(paths.srcHTML)
-    .pipe(minifyInline())
-    .pipe(htmlmin({collapseWhitespace: true}))
-    .pipe(gulp.dest(paths.build))
-);
-
-gulp.task(tasks.buildJS, () =>
-  gulp.src(paths.srcJS)
-    .pipe(babel({
-      presets: ["es2015"]
-    }))
-    .pipe(uglify())
-    .pipe(gulp.dest(paths.build))
-);
-
-gulp.task(tasks.inline, [tasks.buildHTML, tasks.buildJS], () =>
-  gulp.src(paths.builtHTML)
-    .pipe(inlinesource())
-    .pipe(gulp.dest(paths.build))
-);
-
-gulp.task(tasks.build, [tasks.inline], () =>
-  gulp.src(paths.builtHTML)
-    .pipe(gulp.dest("."))
-);
-
-gulp.task(tasks.verifyBuild, [tasks.build], () =>
-  gulp.src("./*.html")
-    .pipe(gulp.dest("bower_components/" + bowerConfig.name))
-);
-
-gulp.task(tasks.verifyDependencies, [tasks.verifyBuild], () => dependencies(paths.verify));
-
-gulp.task(tasks.verifyDemoJS, () => compileJS(paths.demoJS, paths.verifyDemo));
-
-gulp.task(tasks.verifyDemoJSON, () => gulp.src(paths.demoJSON).pipe(gulp.dest(paths.verifyDemo)));
-
-gulp.task(tasks.verifyDemoHTML, () => compileHTML(paths.demoHTML, paths.verifyDemo));
-
-gulp.task(tasks.verify, [tasks.verifyDependencies, tasks.verifyDemoJS, tasks.verifyDemoJSON, tasks.verifyDemoHTML], () =>
-  gulp.src(paths.verify)
-    .pipe(webserver({
-      host: "localhost",
-      port: 8000,
-      livereload: false,
-      directoryListing: true,
-      open: "http://localhost:8000/demo"
-    }))
-);

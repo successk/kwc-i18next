@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../bower_components/web-component-tester/browser.js"></script>
+  <link rel="import" href="../../kwc-i18next.html">
+</head>
+<body>
+
+<kwc-i18next key="context:friend" id="ctx1"></kwc-i18next>
+<kwc-i18next key="context:friend" p-context="male" id="ctx2"></kwc-i18next>
+<kwc-i18next key="context:friend" p-context="female" id="ctx3"></kwc-i18next>
+<kwc-i18next key="context:friend" p-context="male" p-count="1" id="ctx4"></kwc-i18next>
+<kwc-i18next key="context:friend" p-context="male" p-count="100" id="ctx5"></kwc-i18next>
+<kwc-i18next key="context:friend" p-context="female" p-count="1" id="ctx6"></kwc-i18next>
+<kwc-i18next key="context:friend" p-context="female" p-count="100" id="ctx7"></kwc-i18next>
+
+<script src="../../bower_components/i18next/i18next.min.js"></script>
+<script>
+  (function () {
+    i18next
+        .init({
+          lng: "en",
+          fallbackLng: "en",
+          resources: {
+            en: {
+              context: {
+                friend: "A friend",
+                friend_male: "A boyfriend",
+                friend_female: "A girlfriend",
+                friend_male_plural: "{{count}} boyfriends",
+                friend_female_plural: "{{count}} girlfriends"
+              }
+            }
+          }
+        });
+  })()
+</script>
+<script>
+  suite("<kwc-i18next> context", function () {
+    test("context:friend base", function (done) {
+      var ctx = document.querySelector("#ctx1");
+      flush(function () {
+        assert.equal(ctx.var, "A friend");
+        done();
+      });
+    });
+
+    test("context:friend male", function (done) {
+      var ctx = document.querySelector("#ctx2");
+      flush(function () {
+        assert.equal(ctx.var, "A boyfriend");
+        done();
+      });
+    });
+
+    test("context:friend female", function (done) {
+      var ctx = document.querySelector("#ctx3");
+      flush(function () {
+        assert.equal(ctx.var, "A girlfriend");
+        done();
+      });
+    });
+
+    test("context:friend male 1", function (done) {
+      var ctx = document.querySelector("#ctx4");
+      flush(function () {
+        assert.equal(ctx.var, "A boyfriend");
+        done();
+      });
+    });
+
+    test("context:friend male 100", function (done) {
+      var ctx = document.querySelector("#ctx5");
+      flush(function () {
+        assert.equal(ctx.var, "100 boyfriends");
+        done();
+      });
+    });
+
+    test("context:friend male 1", function (done) {
+      var ctx = document.querySelector("#ctx6");
+      flush(function () {
+        assert.equal(ctx.var, "A girlfriend");
+        done();
+      });
+    });
+
+    test("context:friend male 100", function (done) {
+      var ctx = document.querySelector("#ctx7");
+      flush(function () {
+        assert.equal(ctx.var, "100 girlfriends");
+        done();
+      });
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 {
   "name": "kwc-i18next",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "A web component used to manage internationalization – replaces kwc-i18n",
   "license": "MIT",
   "main": "kwc-i18next.html",
@@ -19,10 +19,13 @@
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^1.0.0",
-    "i18next": "^2.5.1"
+    "i18next": "^3.1.0"
   },
   "homepage": "https://github.com/successk/kwc-i18next",
   "authors": [
     "Gaëtan Rizio <gaetan@rizio.fr>"
-  ]
+  ],
+  "devDependencies": {
+    "i18next-xhr-backend": "^0.5.4"
+  }
 }

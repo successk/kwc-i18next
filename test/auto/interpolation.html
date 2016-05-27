@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../bower_components/web-component-tester/browser.js"></script>
+  <link rel="import" href="../../kwc-i18next.html">
+</head>
+<body>
+
+<kwc-i18next key="interpolation:base" p-text="1" id="interpolation1"></kwc-i18next>
+<kwc-i18next key="interpolation:html" p-code="<u>underline</u>" id="interpolation2"></kwc-i18next>
+<kwc-i18next key="interpolation:dangerous" p-code="<span style='color:red'>BOOM!<span>" not-escape id="interpolation3"></kwc-i18next>
+<kwc-i18next key="interpolation:dangerous" p-code="<span style='color:red'>BOOM!<span>" id="interpolation4"></kwc-i18next>
+<kwc-i18next key="interpolation:deep" p-var='{"deep":{"deep":"Some var"}}' id="interpolation5"></kwc-i18next>
+
+<script src="../../bower_components/i18next/i18next.min.js"></script>
+<script>
+  (function () {
+    i18next
+        .init({
+          lng: "en",
+          fallbackLng: "en",
+          resources: {
+            en: {
+              interpolation: {
+                "base": "A random value: {{text}}",
+                "html": "A value in HTML: {{-code}}",
+                "dangerous": "Maybe this code is dangerous: {{code}}",
+                "deep": "A complex variable: {{var.deep.deep}}"
+              }
+            }
+          }
+        });
+  })()
+</script>
+<script>
+  suite("<kwc-i18next> interpolation", function () {
+    test("interpolation:base", function (done) {
+      var interpolation = document.querySelector("#interpolation1");
+      flush(function () {
+        assert.equal(interpolation.var, "A random value: 1");
+        done();
+      });
+    });
+
+    test("interpolation:html", function (done) {
+      var interpolation = document.querySelector("#interpolation2");
+      flush(function () {
+        assert.equal(interpolation.var, "A value in HTML: <u>underline</u>");
+        done();
+      });
+    });
+
+    test("interpolation:dangerous not-escape", function (done) {
+      var interpolation = document.querySelector("#interpolation3");
+      flush(function () {
+        assert.equal(interpolation.var, "Maybe this code is dangerous: <span style='color:red'>BOOM!<span>");
+        done();
+      });
+    });
+
+    test("interpolation:dangerous", function (done) {
+      var interpolation = document.querySelector("#interpolation4");
+      flush(function () {
+        assert.equal(interpolation.var, "Maybe this code is dangerous: &lt;span style=&#39;color:red&#39;&gt;BOOM!&lt;span&gt;");
+        done();
+      });
+    });
+
+    test("interpolation:deep", function (done) {
+      var interpolation = document.querySelector("#interpolation5");
+      flush(function () {
+        assert.equal(interpolation.var, "A complex variable: Some var");
+        done();
+      });
+    });
+  });
+</script>
+</body>
+</html>

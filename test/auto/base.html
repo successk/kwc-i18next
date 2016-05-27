@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="../../bower_components/webcomponentsjs/webcomponents-lite.min.js"></script>
+  <script src="../../bower_components/web-component-tester/browser.js"></script>
+  <link rel="import" href="../../kwc-i18next.html">
+</head>
+<body>
+
+<kwc-i18next key="test:title" show id="show1"></kwc-i18next>
+<kwc-i18next key="test:body" show id="show2"></kwc-i18next>
+<kwc-i18next key="key" show id="show3"></kwc-i18next>
+<kwc-i18next key="undefined" show id="show4"></kwc-i18next>
+
+<kwc-i18next key="test:title" id="var1"></kwc-i18next>
+<kwc-i18next key="test:body" id="var2"></kwc-i18next>
+<kwc-i18next key="key" id="var3"></kwc-i18next>
+<kwc-i18next key="undefined" id="var4"></kwc-i18next>
+
+<script src="../../bower_components/i18next/i18next.min.js"></script>
+<script>
+  (function () {
+    i18next
+        .init({
+          lng: "en",
+          fallbackLng: "en",
+          resources: {
+            en: {
+              test: {
+                title: "My title",
+                body: "My body"
+              },
+              default: {
+                key: "A value"
+              },
+              global: {
+                undefined: "Please give a value"
+              }
+            }
+          },
+          defaultNS: "default",
+          fallbackNS: "global"
+        });
+  })()
+</script>
+<script>
+  suite("<kwc-i18next> base", function () {
+    test("test:title show", function (done) {
+      var show = document.querySelector("#show1");
+      flush(function () {
+        assert.equal(show.var, "My title");
+        assert.equal(show.textContent, "My title");
+        done();
+      });
+    });
+
+    test("test:body show", function (done) {
+      var show = document.querySelector("#show2");
+      flush(function () {
+        assert.equal(show.var, "My body");
+        assert.equal(show.textContent, "My body");
+        done();
+      });
+    });
+
+    test("key show", function (done) {
+      var show = document.querySelector("#show3");
+      flush(function () {
+        assert.equal(show.var, "A value");
+        assert.equal(show.textContent, "A value");
+        done();
+      });
+    });
+
+    test("undefined show", function (done) {
+      var show = document.querySelector("#show4");
+      flush(function () {
+        assert.equal(show.var, "Please give a value");
+        assert.equal(show.textContent, "Please give a value");
+        done();
+      });
+    });
+
+    test("test:title var", function (done) {
+      var nodeVar = document.querySelector("#var1");
+      flush(function () {
+        assert.equal(nodeVar.var, "My title");
+        assert.equal(nodeVar.textContent, "");
+        done();
+      });
+    });
+
+    test("test:body var", function (done) {
+      var nodeVar = document.querySelector("#var2");
+      flush(function () {
+        assert.equal(nodeVar.var, "My body");
+        assert.equal(nodeVar.textContent, "");
+        done();
+      });
+    });
+
+    test("key var", function (done) {
+      var nodeVar = document.querySelector("#var3");
+      flush(function () {
+        assert.equal(nodeVar.var, "A value");
+        assert.equal(nodeVar.textContent, "");
+        done();
+      });
+    });
+
+    test("undefined var", function (done) {
+      var nodeVar = document.querySelector("#var4");
+      flush(function () {
+        assert.equal(nodeVar.var, "Please give a value");
+        assert.equal(nodeVar.textContent, "");
+        done();
+      });
+    });
+  });
+</script>
+</body>
+</html>
